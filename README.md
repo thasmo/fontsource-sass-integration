@@ -22,6 +22,7 @@
 ## Setup
 ```
 git clone https://github.com/thasmo/fontsource-sass-integration.git
+cd fontsource-sass-integration
 npm install
 npm run build
 ```
