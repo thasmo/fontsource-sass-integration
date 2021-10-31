@@ -8,8 +8,8 @@
 
 ## Goal
 
-* Usage of `fontsource` font files in `Sass`-based projects easily.
-* Support for `Sass Modules` and a hassle-free usage.
+* Usage of `fontsource` font files in `Sass`-based projects.
+* Support for `Sass Modules` with a hassle-free usage.
 * Support for classic/static font-files and variable/dynamic font-files.
 
 ## Features
