@@ -1,0 +1,15 @@
+{
+  "name": "@thasmo/fontsource-sass-integration",
+  "version": "0.0.0",
+  "scripts": {
+    "build": "sass source/main.scss public/main.css"
+  },
+  "devDependencies": {
+    "sass": "^1.43.4"
+  },
+  "dependencies": {
+    "@fontsource/open-sans": "^4.5.1",
+    "@fontsource/recursive": "^4.5.0",
+    "@fontsource/roboto": "^4.5.1"
+  }
+}

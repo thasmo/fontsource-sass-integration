@@ -1,0 +1,39 @@
+@use 'sass:list';
+@use 'sass:map';
+@use 'sass:string';
+
+// https://fonts.googleapis.com/css2?family=Recursive:slnt,wght,CASL,CRSV,MONO@-15..0,300..1000,0..1,0..1,0..1
+@use 'fontsource/recursive/utilities' as recursive with (
+	$subsets: all,
+	$axes: all,
+);
+
+// https://fonts.googleapis.com/css2?family=Open+Sans:wdth,wght@75..100,300..800
+@use 'fontsource/open-sans/utilities' as opensans with (
+	$styles: all,
+	$weights: all,
+	$subsets: all,
+	$suffix: 'Variable',
+);
+
+// https://fonts.googleapis.com/css2?family=Roboto
+@use 'fontsource/roboto/utilities' as roboto with (
+	$subsets: all,
+);
+
+@include recursive.face();
+
+@include opensans.face();
+@include opensans.face(
+	$axes: all,
+);
+
+@include roboto.face();
+
+body {
+	font-family: string.quote(#{recursive.$name recursive.$suffix}), recursive.$font-category;
+}
+
+h1 {
+	font-family: string.quote(#{roboto.$name roboto.$suffix}), roboto.$font-category;
+}

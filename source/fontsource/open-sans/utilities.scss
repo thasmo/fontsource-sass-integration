@@ -1,0 +1,117 @@
+@use 'sass:list';
+@use 'sass:map';
+@use 'sass:math';
+@use 'sass:string';
+@use 'sass:meta';
+
+@forward 'metadata' as font-*;
+@use 'metadata' as font;
+
+$name: font.$name !default;
+$styles: map.get(font.$defaults, style) !default;
+$weights: map.get(font.$defaults, weight) !default;
+$subsets: (map.get(font.$defaults, subset)) !default;
+$axes: null !default;
+$stretch: null !default;
+$synthesis: null !default;
+$display: null !default;
+$suffix: null !default;
+
+@function path(
+	$weight: map.get(font.$defaults, weight),
+	$style: map.get(font.$defaults, style),
+	$subset: map.get(font.$defaults, subset),
+	$format: woff2,
+	$axis: null,
+	$identifier: font.$identifier,
+	$base: font.$directory,
+) {
+	@if $axis {
+		@return '#{$base}/#{$identifier}-#{$subset}-variable-#{if($axis == all, 'full', $axis + 'Only')}-#{$style}.woff2';
+	} @else {
+		@return '#{$base}/#{$identifier}-#{$subset}-#{$weight}-#{$style}.#{$format}';
+	}
+}
+
+@mixin face(
+	$name: $name,
+	$styles: $styles,
+	$weights: $weights,
+	$subsets: $subsets,
+	$axes: $axes,
+	$synthesis: $synthesis,
+	$stretch: $stretch,
+	$display: $stretch,
+	$suffix: $suffix,
+) {
+	@each $style in (if($axes, map.get(font.$defaults, style), (if($styles == 'all', font.$styles, $styles)))) {
+		@each $weight in (if($axes, map.get(font.$defaults, weight), (if($weights == 'all', font.$weights, $weights)))) {
+			@each $subset, $glyphs in (if($subsets == 'all', font.$subsets, $subsets)) {
+				/*
+				Name: #{$name}
+				Style: #{$style}
+				Weight: #{$weight}
+				Subset: #{$subset}
+				Axes: #{$axes}
+				*/
+				@font-face {
+					font-family: string.quote(#{$name if($axes, $suffix, null)});
+
+					font-display: $display;
+					font-synthesis: $synthesis;
+
+					// AXIS slnt
+					@if ($axes == all or (meta.type-of($axes) == 'list' and list.index($axes, slnt) != null)) and map.has-key(font.$axes, slnt) {
+						font-style: oblique map.get(font.$axes, slnt, min) + deg map.get(font.$axes, slnt, max) + deg;
+					} @else if (meta.type-of($axes) == 'map') and map.has-key($axes, slnt) {
+						font-style: oblique map.get($axes, slnt, min) + deg map.get($axes, slnt, max) + deg;
+					} @else {
+						font-style: $style;
+					}
+
+					// AXIS wght
+					@if ($axes == all or (meta.type-of($axes) == 'list' and list.index($axes, wght) != null)) and map.has-key(font.$axes, wght) {
+						font-weight: map.get(font.$axes, wght, min) map.get(font.$axes, wght, max);
+					} @else if (meta.type-of($axes) == 'map') and map.has-key($axes, wght) {
+						font-weight: map.get($axes, wght, min) map.get($axes, wght, max);
+					} @else {
+						font-weight: $weight;
+					}
+
+					// AXIS wdth
+					@if ($axes == all or (meta.type-of($axes) == 'list' and list.index($axes, wdth) != null)) and map.has-key(font.$axes, wdth) {
+						font-stretch: math.percentage(math.div(map.get(font.$axes, wdth, min), 100)) math.percentage(math.div(map.get(font.$axes, wdth, max), 100));
+					} @else if (meta.type-of($axes) == 'map') and map.has-key($axes, wdth) {
+						font-stretch: math.percentage(math.div(map.get($axes, wdth, min), 100)) math.percentage(math.div(map.get($axes, wdth, max), 100));
+					} @else {
+						font-stretch: $stretch;
+					}
+
+					// AXIS ital
+					@if (
+						(($axes == all or (meta.type-of($axes) == 'list' and list.index($axes, ital) != null)) and map.has-key(font.$axes, ital)) or
+						(meta.type-of($axes) == 'map' and map.has-key($axes, ital))
+					) {
+						font-variation-settings: 'ital' 1;
+					}
+
+					// GLYPHS
+					@if meta.type-of($glyphs) == 'list' {
+						unicode-range: $glyphs;
+					} @else if map.has-key(font.$subsets, $subset) {
+						unicode-range: map.get(font.$subsets, $subset);
+					}
+
+					// SRC
+					@if ($axes == all and list.length(map.keys(font.$axes)) > 0) {
+						src: url('#{path($axis: all, $style: $style, $subset: $subset, $format: woff2)}') format('woff2 supports variations'),
+						url('#{path($axis: all, $style: $style, $subset: $subset, $format: woff2)}') format('woff2-variations');
+					} @else {
+						src: url('#{path($weight: $weight, $style: $style, $subset: $subset, $format: woff2)}') format('woff2'),
+						url('#{path($weight: $weight, $style: $style, $subset: all, $format: woff)}') format('woff');
+					}
+				}
+			}
+		}
+	}
+}
