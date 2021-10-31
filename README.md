@@ -14,10 +14,10 @@
 
 ## Features
 
-* [x] provide metadata for each font
-* [x] provide mixin to generate font-face declarations
-* [ ] provide mixin to generate font-related declarations (needed?)
-* [ ] provide utility functions to generate (property) values (needed?)
+* [x] metadata for each font
+* [x] mixin to generate font-face declarations
+* [ ] mixin to generate font-related declarations (needed?)
+* [ ] utility functions to generate (property) values (needed?)
 
 ## Setup
 ```
