@@ -2,6 +2,10 @@
 
 > An attempt to provide a modern Sass integration for Fontsource.
 
+* Website [fontsource.org](https://fontsource.org/)
+* GitHub [fontsource/fontsource](https://github.com/fontsource/fontsource)
+* Discussion [Proposal for a modern Sass integration via Sass Modules](https://github.com/fontsource/fontsource/discussions/384)
+
 ## Goal
 
 * Usage of `fontsource` font files in `Sass`-based projects easily.
@@ -22,12 +26,7 @@ npm install
 npm run build
 ```
 
-## Links
-
-**Fontsource**
-* Website [fontsource.org](https://fontsource.org/)
-* GitHub [fontsource/fontsource](https://github.com/fontsource/fontsource)
-* Discussion [Proposal for a modern Sass integration via Sass Modules](https://github.com/fontsource/fontsource/discussions/384)
+## Research
 
 **Articles**
 * https://web.dev/variable-fonts/
