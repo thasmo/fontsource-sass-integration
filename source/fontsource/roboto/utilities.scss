@@ -33,7 +33,91 @@ $suffix: null !default;
 	}
 }
 
+@function style($axes, $fallback) {
+	@if ($axes == all or (meta.type-of($axes) == 'list' and list.index($axes, slnt) != null)) and map.has-key(font.$axes, slnt) {
+		@return oblique map.get(font.$axes, slnt, min) + deg map.get(font.$axes, slnt, max) + deg;
+	} @else if (meta.type-of($axes) == 'map') and map.has-key($axes, slnt) {
+		@return oblique map.get($axes, slnt, min) + deg map.get($axes, slnt, max) + deg;
+	} @else {
+		@return $fallback;
+	}
+}
+
+@function weight($axes, $fallback) {
+	@if ($axes == all or (meta.type-of($axes) == 'list' and list.index($axes, wght) != null)) and map.has-key(font.$axes, wght) {
+		@return map.get(font.$axes, wght, min) map.get(font.$axes, wght, max);
+	} @else if (meta.type-of($axes) == 'map') and map.has-key($axes, wght) {
+		@return map.get($axes, wght, min) map.get($axes, wght, max);
+	} @else {
+		@return $fallback;
+	}
+}
+
+@function stretch($axes, $fallback) {
+	@if ($axes == all or (meta.type-of($axes) == 'list' and list.index($axes, wdth) != null)) and map.has-key(font.$axes, wdth) {
+		@return math.percentage(math.div(map.get(font.$axes, wdth, min), 100)) math.percentage(math.div(map.get(font.$axes, wdth, max), 100));
+	} @else if (meta.type-of($axes) == 'map') and map.has-key($axes, wdth) {
+		@return math.percentage(math.div(map.get($axes, wdth, min), 100)) math.percentage(math.div(map.get($axes, wdth, max), 100));
+	} @else {
+		@return $fallback;
+	}
+}
+
+@function variation($axes) {
+	@if (
+		(($axes == all or (meta.type-of($axes) == 'list' and list.index($axes, ital) != null)) and map.has-key(font.$axes, ital)) or
+		(meta.type-of($axes) == 'map' and map.has-key($axes, ital))
+	) {
+		@return 'ital' 1;
+	}
+
+	@return null;
+}
+
+@function source (
+	$axes,
+	$subset,
+	$style,
+	$weight,
+) {
+	@if ($axes == all and list.length(map.keys(font.$axes)) > 0) {
+		@return
+			url('#{path($axis: all, $style: $style, $subset: $subset, $format: woff2)}') format('woff2 supports variations'),
+			url('#{path($axis: all, $style: $style, $subset: $subset, $format: woff2)}') format('woff2-variations');
+	} @else {
+		@return
+			url('#{path($weight: $weight, $style: $style, $subset: $subset, $format: woff2)}') format('woff2'),
+			url('#{path($weight: $weight, $style: $style, $subset: all, $format: woff)}') format('woff');
+	}
+}
+
 @mixin face(
+	$name: null,
+	$style: null,
+	$weight: null,
+	$stretch: null,
+	$variation: null,
+	$synthesis: null,
+	$display: null,
+	$glyphs: null,
+	$source: null,
+) {
+	@font-face {
+		font-family: $name;
+		font-style: $style;
+		font-weight: $weight;
+		font-stretch: $stretch;
+		font-variation-settings: $variation;
+
+		font-display: $display;
+		font-synthesis: $synthesis;
+
+		unicode-range: $glyphs;
+		src: $source;
+	}
+}
+
+@mixin faces(
 	$name: $name,
 	$styles: $styles,
 	$weights: $weights,
@@ -54,63 +138,17 @@ $suffix: null !default;
 				Subset: #{$subset}
 				Axes: #{$axes}
 				*/
-				@font-face {
-					font-family: string.quote(#{$name if($axes, $suffix, null)});
-
-					font-display: $display;
-					font-synthesis: $synthesis;
-
-					// AXIS slnt
-					@if ($axes == all or (meta.type-of($axes) == 'list' and list.index($axes, slnt) != null)) and map.has-key(font.$axes, slnt) {
-						font-style: oblique map.get(font.$axes, slnt, min) + deg map.get(font.$axes, slnt, max) + deg;
-					} @else if (meta.type-of($axes) == 'map') and map.has-key($axes, slnt) {
-						font-style: oblique map.get($axes, slnt, min) + deg map.get($axes, slnt, max) + deg;
-					} @else {
-						font-style: $style;
-					}
-
-					// AXIS wght
-					@if ($axes == all or (meta.type-of($axes) == 'list' and list.index($axes, wght) != null)) and map.has-key(font.$axes, wght) {
-						font-weight: map.get(font.$axes, wght, min) map.get(font.$axes, wght, max);
-					} @else if (meta.type-of($axes) == 'map') and map.has-key($axes, wght) {
-						font-weight: map.get($axes, wght, min) map.get($axes, wght, max);
-					} @else {
-						font-weight: $weight;
-					}
-
-					// AXIS wdth
-					@if ($axes == all or (meta.type-of($axes) == 'list' and list.index($axes, wdth) != null)) and map.has-key(font.$axes, wdth) {
-						font-stretch: math.percentage(math.div(map.get(font.$axes, wdth, min), 100)) math.percentage(math.div(map.get(font.$axes, wdth, max), 100));
-					} @else if (meta.type-of($axes) == 'map') and map.has-key($axes, wdth) {
-						font-stretch: math.percentage(math.div(map.get($axes, wdth, min), 100)) math.percentage(math.div(map.get($axes, wdth, max), 100));
-					} @else {
-						font-stretch: $stretch;
-					}
-
-					// AXIS ital
-					@if (
-						(($axes == all or (meta.type-of($axes) == 'list' and list.index($axes, ital) != null)) and map.has-key(font.$axes, ital)) or
-						(meta.type-of($axes) == 'map' and map.has-key($axes, ital))
-					) {
-						font-variation-settings: 'ital' 1;
-					}
-
-					// GLYPHS
-					@if meta.type-of($glyphs) == 'list' {
-						unicode-range: $glyphs;
-					} @else if map.has-key(font.$subsets, $subset) {
-						unicode-range: map.get(font.$subsets, $subset);
-					}
-
-					// SRC
-					@if ($axes == all and list.length(map.keys(font.$axes)) > 0) {
-						src: url('#{path($axis: all, $style: $style, $subset: $subset, $format: woff2)}') format('woff2 supports variations'),
-						url('#{path($axis: all, $style: $style, $subset: $subset, $format: woff2)}') format('woff2-variations');
-					} @else {
-						src: url('#{path($weight: $weight, $style: $style, $subset: $subset, $format: woff2)}') format('woff2'),
-						url('#{path($weight: $weight, $style: $style, $subset: all, $format: woff)}') format('woff');
-					}
-				}
+				@include face(
+					$name: string.quote(#{$name if($axes, $suffix, null)}),
+					$style: style($axes, $style),
+					$weight: weight($axes, $weight),
+					$stretch: stretch($axes, $stretch),
+					$variation: variation($axes),
+					$display: $display,
+					$synthesis: $synthesis,
+					$glyphs: if($glyphs, $glyphs, if(map.has-key(font.$subsets, $subset), map.get(font.$subsets, $subset), null)),
+					$source: source($axes, $subset, $style, $weight),
+				);
 			}
 		}
 	}

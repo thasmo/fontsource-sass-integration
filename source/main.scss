@@ -21,14 +21,14 @@
 	$subsets: all,
 );
 
-@include recursive.face();
+@include recursive.faces();
 
-@include opensans.face();
-@include opensans.face(
+@include opensans.faces();
+@include opensans.faces(
 	$axes: all,
 );
 
-@include roboto.face();
+@include roboto.faces();
 
 body {
 	font-family: string.quote(#{recursive.$name recursive.$suffix}), recursive.$font-category;
