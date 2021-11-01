@@ -29,11 +29,3 @@
 );
 
 @include roboto.faces();
-
-body {
-	font-family: string.quote(#{recursive.$name recursive.$suffix}), recursive.$font-category;
-}
-
-h1 {
-	font-family: string.quote(#{roboto.$name roboto.$suffix}), roboto.$font-category;
-}
