@@ -131,13 +131,7 @@ $suffix: null !default;
 	@each $style in (if($axes, map.get(font.$defaults, style), (if($styles == 'all', font.$styles, $styles)))) {
 		@each $weight in (if($axes, map.get(font.$defaults, weight), (if($weights == 'all', font.$weights, $weights)))) {
 			@each $subset, $glyphs in (if($subsets == 'all', font.$subsets, $subsets)) {
-				/*
-				Name: #{$name}
-				Style: #{$style}
-				Weight: #{$weight}
-				Subset: #{$subset}
-				Axes: #{$axes}
-				*/
+				/* #{$name, $style, $weight} (Subset: #{$subset}, Axis: #{$axes}) */
 				@include face(
 					$name: string.quote(#{$name if($axes, $suffix, null)}),
 					$style: style($axes, $style),
