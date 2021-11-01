@@ -146,7 +146,7 @@ $declarations: null !default;
 	@each $axis, $metrics in $axes {
 		@each $style in if($axis, map.get(font.$defaults, style), if($styles == all, font.$styles, $styles)) {
 			@each $weight in (if($axis, map.get(font.$defaults, weight), (if($weights == all, font.$weights, $weights)))) {
-				@each $subset, $glyphs in (if($subsets == all, font.$subsets, $subsets)) {
+				@each $subset, $glyphs in (if($subsets == all, map.keys(font.$subsets), $subsets)) {
 					/* #{$name, $style, $weight} (Subset: #{$subset}, Axis: #{$axis}) */
 					@include face(
 						$name: string.quote(#{$name if($axis, $suffix, null)}),
