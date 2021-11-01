@@ -17,22 +17,6 @@ $synthesis: null !default;
 $display: null !default;
 $suffix: null !default;
 
-@function path(
-	$weight: map.get(font.$defaults, weight),
-	$style: map.get(font.$defaults, style),
-	$subset: map.get(font.$defaults, subset),
-	$format: woff2,
-	$axis: null,
-	$identifier: font.$identifier,
-	$base: font.$directory,
-) {
-	@if $axis {
-		@return '#{$base}/#{$identifier}-#{$subset}-variable-#{if($axis == all, 'full', $axis + 'Only')}-#{$style}.woff2';
-	} @else {
-		@return '#{$base}/#{$identifier}-#{$subset}-#{$weight}-#{$style}.#{$format}';
-	}
-}
-
 @function style($axes, $fallback) {
 	@if ($axes == all or (meta.type-of($axes) == 'list' and list.index($axes, slnt) != null)) and map.has-key(font.$axes, slnt) {
 		@return oblique map.get(font.$axes, slnt, min) + deg map.get(font.$axes, slnt, max) + deg;
@@ -88,6 +72,22 @@ $suffix: null !default;
 		@return
 			url('#{path($weight: $weight, $style: $style, $subset: $subset, $format: woff2)}') format('woff2'),
 			url('#{path($weight: $weight, $style: $style, $subset: all, $format: woff)}') format('woff');
+	}
+}
+
+@function path(
+	$weight: map.get(font.$defaults, weight),
+	$style: map.get(font.$defaults, style),
+	$subset: map.get(font.$defaults, subset),
+	$format: woff2,
+	$axis: null,
+	$identifier: font.$identifier,
+	$base: font.$directory,
+) {
+	@if $axis {
+		@return '#{$base}/#{$identifier}-#{$subset}-variable-#{if($axis == all, 'full', $axis + 'Only')}-#{$style}.woff2';
+	} @else {
+		@return '#{$base}/#{$identifier}-#{$subset}-#{$weight}-#{$style}.#{$format}';
 	}
 }
 
