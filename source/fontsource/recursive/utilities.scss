@@ -12,8 +12,6 @@ $weights: map.get(font.$defaults, weight) !default;
 $subsets: (map.get(font.$defaults, subset)) !default;
 $axes: null !default;
 $stretch: null !default;
-$synthesis: null !default;
-$display: null !default;
 $suffix: null !default;
 $declarations: null !default;
 
@@ -106,8 +104,6 @@ $declarations: null !default;
 	$weight: null,
 	$stretch: null,
 	$variation: null,
-	$synthesis: null,
-	$display: null,
 	$glyphs: null,
 	$source: null,
 	$declarations: null,
@@ -118,9 +114,6 @@ $declarations: null !default;
 		font-weight: $weight;
 		font-stretch: $stretch;
 		font-variation-settings: $variation;
-
-		font-display: $display;
-		font-synthesis: $synthesis;
 
 		@each $property, $value in $declarations {
 			#{$property}: $value;
@@ -137,9 +130,7 @@ $declarations: null !default;
 	$weights: $weights,
 	$subsets: $subsets,
 	$axes: $axes,
-	$synthesis: $synthesis,
 	$stretch: $stretch,
-	$display: $stretch,
 	$suffix: $suffix,
 	$declarations: $declarations,
 ) {
@@ -154,8 +145,6 @@ $declarations: null !default;
 						$weight: weight(if($axis == slnt and $metrics, $metrics, $axis), $weight),
 						$stretch: stretch(if($axis == wdth and $metrics, $metrics, $axis), $stretch),
 						$variation: variation(if($axis == ital and $metrics, $metrics, $axis)),
-						$display: $display,
-						$synthesis: $synthesis,
 						$declarations: $declarations,
 						$glyphs: glyphs(if($glyphs, $glyphs, $subset)),
 						$source: source($axis, $subset, $style, $weight),
