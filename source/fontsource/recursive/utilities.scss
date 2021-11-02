@@ -9,9 +9,9 @@
 $name: font.$name !default;
 $styles: map.get(font.$defaults, style) !default;
 $weights: map.get(font.$defaults, weight) !default;
+$widths: map.get(font.$defaults, width) !default;
 $subsets: (map.get(font.$defaults, subset)) !default;
 $axes: null !default;
-$stretch: null !default;
 $suffix: null !default;
 $declarations: null !default;
 
@@ -39,7 +39,7 @@ $declarations: null !default;
 	@return null;
 }
 
-@function stretch($value, $axis: null) {
+@function width($value, $axis: null) {
 	@if ($axis == all or $axis == wdth) and map.has-key(font.$axes, wdth) {
 		@return math.percentage(math.div(map.get(font.$axes, wdth, min), 100)) math.percentage(math.div(map.get(font.$axes, wdth, max), 100));
 	} @else if meta.type-of($axis) == 'map' {
@@ -108,7 +108,7 @@ $declarations: null !default;
 	$name: null,
 	$style: null,
 	$weight: null,
-	$stretch: null,
+	$width: null,
 	$variation: null,
 	$glyphs: null,
 	$source: null,
@@ -118,7 +118,7 @@ $declarations: null !default;
 		font-family: $name;
 		font-style: $style;
 		font-weight: $weight;
-		font-stretch: $stretch;
+		font-stretch: $width;
 		font-variation-settings: $variation;
 
 		@each $property, $value in $declarations {
@@ -134,27 +134,29 @@ $declarations: null !default;
 	$name: $name,
 	$styles: $styles,
 	$weights: $weights,
+	$widths: $widths,
 	$subsets: $subsets,
 	$axes: $axes,
-	$stretch: $stretch,
 	$suffix: $suffix,
 	$declarations: $declarations,
 ) {
 	@each $axis, $metrics in $axes {
 		@each $style in if($axis, map.get(font.$defaults, style), if($styles == all, font.$styles, $styles)) {
 			@each $weight in (if($axis, map.get(font.$defaults, weight), (if($weights == all, font.$weights, $weights)))) {
-				@each $subset, $glyphs in (if($subsets == all, map.keys(font.$subsets), $subsets)) {
-					/* #{$name, $style, $weight} (Subset: #{$subset}, Axis: #{$axis}) */
-					@include face(
-						$name: string.quote(#{$name if($axis, $suffix, null)}),
-						$style: style($style, if($axis == slnt and $metrics, $metrics, $axis)),
-						$weight: weight($weight, if($axis == slnt and $metrics, $metrics, $axis)),
-						$stretch: stretch($stretch, if($axis == wdth and $metrics, $metrics, $axis)),
-						$variation: variation(if($axis == ital and $metrics, $metrics, $axis)),
-						$declarations: $declarations,
-						$glyphs: glyphs(if($glyphs, $glyphs, $subset)),
-						$source: source($axis, $subset, $style, $weight),
-					);
+				@each $width in if($axis, map.get(font.$defaults, width), if($widths == all, font.$widths, $widths)) {
+					@each $subset, $glyphs in (if($subsets == all, map.keys(font.$subsets), $subsets)) {
+						/* #{$name, $style, $weight, $width} (Subset: #{$subset}, Axis: #{$axis}) */
+						@include face(
+							$name: string.quote(#{$name if($axis, $suffix, null)}),
+							$style: style($style, if($axis == slnt and $metrics, $metrics, $axis)),
+							$weight: weight($weight, if($axis == slnt and $metrics, $metrics, $axis)),
+							$width: width($width, if($axis == wdth and $metrics, $metrics, $axis)),
+							$variation: variation(if($axis == ital and $metrics, $metrics, $axis)),
+							$declarations: $declarations,
+							$glyphs: glyphs(if($glyphs, $glyphs, $subset)),
+							$source: source($axis, $subset, $style, $weight),
+						);
+					}
 				}
 			}
 		}

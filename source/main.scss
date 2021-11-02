@@ -16,6 +16,14 @@
 	$suffix: 'Variable',
 );
 
+// https://fonts.googleapis.com/css2?family=Open+Sans+Condensed:ital,wght@0,300;0,700;1,300
+@use 'fontsource/open-sans-condensed/utilities' as opensanscondensed with (
+	$name: 'Open Sans',
+	$styles: all,
+	$weights: all,
+	$subsets: all,
+);
+
 // https://fonts.googleapis.com/css2?family=Roboto
 @use 'fontsource/roboto/utilities' as roboto with (
 	$subsets: all,
@@ -27,5 +35,7 @@
 @include opensans.faces(
 	$axes: all,
 );
+
+@include opensanscondensed.faces();
 
 @include roboto.faces();
