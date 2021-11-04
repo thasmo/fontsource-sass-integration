@@ -10,12 +10,12 @@ $name: font.$name !default;
 $styles: map.get(font.$defaults, style) !default;
 $weights: map.get(font.$defaults, weight) !default;
 $widths: map.get(font.$defaults, width) !default;
-$subsets: (map.get(font.$defaults, subset)) !default;
+$subsets: all !default;
 $axes: null !default;
 $suffix: null !default;
 $declarations: null !default;
 
-@function style($value, $axis: null) {
+@function face-style($value, $axis: null) {
 	@if ($axis == all or $axis == slnt) and map.has-key(font.$axes, slnt) {
 		@return oblique map.get(font.$axes, slnt, min) + deg map.get(font.$axes, slnt, max) + deg;
 	} @else if meta.type-of($axis) == 'map' {
@@ -27,7 +27,7 @@ $declarations: null !default;
 	@return null;
 }
 
-@function weight($value, $axis: null) {
+@function face-weight($value, $axis: null) {
 	@if ($axis == all or $axis == wght) and map.has-key(font.$axes, wght) {
 		@return map.get(font.$axes, wght, min) map.get(font.$axes, wght, max);
 	} @else if meta.type-of($axis) == 'map' {
@@ -39,7 +39,7 @@ $declarations: null !default;
 	@return null;
 }
 
-@function width($value, $axis: null) {
+@function face-width($value, $axis: null) {
 	@if ($axis == all or $axis == wdth) and map.has-key(font.$axes, wdth) {
 		@return math.percentage(math.div(map.get(font.$axes, wdth, min), 100)) math.percentage(math.div(map.get(font.$axes, wdth, max), 100));
 	} @else if meta.type-of($axis) == 'map' {
@@ -51,7 +51,7 @@ $declarations: null !default;
 	@return null;
 }
 
-@function variation($axis) {
+@function face-variation($axis) {
 	@if ($axis == all or $axis == ital) and map.has-key(font.$axes, ital) {
 		@return 'ital' 1;
 	} @else if meta.type-of($axis) == 'map' {
@@ -61,11 +61,11 @@ $declarations: null !default;
 	@return null;
 }
 
-@function glyphs($glyphs) {
-	@if meta.type-of($glyphs) == list {
-		@return $glyphs;
-	} @else if map.has-key(font.$subsets, $glyphs) {
-		@return map.get(font.$subsets, $glyphs);
+@function glyphs($subset) {
+	@if meta.type-of($subset) == map {
+		@return $subset;
+	} @else if map.has-key(font.$subsets, $subset) {
+		@return map.get(font.$subsets, $subset);
 	}
 
 	@return null;
@@ -104,7 +104,7 @@ $declarations: null !default;
 	}
 }
 
-@mixin face(
+@mixin declaration(
 	$name: null,
 	$style: null,
 	$weight: null,
@@ -142,20 +142,22 @@ $declarations: null !default;
 ) {
 	@each $axis, $metrics in $axes {
 		@each $style in if($axis, map.get(font.$defaults, style), if($styles == all, font.$styles, $styles)) {
-			@each $weight in (if($axis, map.get(font.$defaults, weight), (if($weights == all, font.$weights, $weights)))) {
+			@each $weight in if($axis, map.get(font.$defaults, weight), if($weights == all, font.$weights, $weights)) {
 				@each $width in if($axis, map.get(font.$defaults, width), if($widths == all, font.$widths, $widths)) {
-					@each $subset, $glyphs in (if($subsets == all, map.keys(font.$subsets), $subsets)) {
-						/* #{$name, $style, $weight, $width} (Subset: #{$subset}, Axis: #{$axis}) */
-						@include face(
-							$name: string.quote(#{$name if($axis, $suffix, null)}),
-							$style: style($style, if($axis == slnt and $metrics, $metrics, $axis)),
-							$weight: weight($weight, if($axis == slnt and $metrics, $metrics, $axis)),
-							$width: width($width, if($axis == wdth and $metrics, $metrics, $axis)),
-							$variation: variation(if($axis == ital and $metrics, $metrics, $axis)),
-							$declarations: $declarations,
-							$glyphs: glyphs(if($glyphs, $glyphs, $subset)),
-							$source: source($axis, $subset, $style, $weight),
-						);
+					@each $subset, $glyphs in if($subsets == all, map.keys(font.$subsets), $subsets) {
+						@each $glyphs in glyphs(if($glyphs, $glyphs, $subset)) {
+							/* #{$name, $style, $weight, $width} (Subset: #{$subset}, Axis: #{$axis}) */
+							@include declaration(
+								$name: string.quote(#{$name if($axis, $suffix, null)}),
+								$style: face-style($style, if($axis == slnt and $metrics, $metrics, $axis)),
+								$weight: face-weight($weight, if($axis == slnt and $metrics, $metrics, $axis)),
+								$width: face-width($width, if($axis == wdth and $metrics, $metrics, $axis)),
+								$variation: face-variation(if($axis == ital and $metrics, $metrics, $axis)),
+								$declarations: $declarations,
+								$glyphs: $glyphs,
+								$source: source($axis, $subset, $style, $weight),
+							);
+						}
 					}
 				}
 			}

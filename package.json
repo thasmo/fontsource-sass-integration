@@ -8,6 +8,7 @@
     "sass": "^1.43.4"
   },
   "dependencies": {
+    "@fontsource/noto-sans-jp": "^4.5.2",
     "@fontsource/open-sans": "^4.5.1",
     "@fontsource/open-sans-condensed": "^4.5.0",
     "@fontsource/recursive": "^4.5.0",

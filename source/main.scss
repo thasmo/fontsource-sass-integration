@@ -29,13 +29,11 @@
 	$subsets: all,
 );
 
+// https://fonts.googleapis.com/css2?family=Noto+Sans+JP
+@use 'fontsource/noto-sans-jp/utilities' as notosansjp;
+
 @include recursive.faces();
-
 @include opensans.faces();
-@include opensans.faces(
-	$axes: all,
-);
-
 @include opensanscondensed.faces();
-
 @include roboto.faces();
+@include notosansjp.faces();
