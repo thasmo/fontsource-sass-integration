@@ -1,0 +1,10 @@
+@use 'sass:list';
+@use 'sass:map';
+@use 'sass:string';
+
+// https://fonts.googleapis.com/css2?family=Recursive:slnt,wght,CASL,CRSV,MONO@-15..0,300..1000,0..1,0..1,0..1
+@use '../fonts/noto-sans-jp/utilities' as font with (
+	$axes: all,
+);
+
+@include font.faces();

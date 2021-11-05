@@ -2,12 +2,13 @@
   "name": "@thasmo/fontsource-sass-integration",
   "version": "0.0.0",
   "scripts": {
-    "build": "sass source/main.scss public/main.css"
+    "build": "sass source/build/:public/"
   },
   "devDependencies": {
     "sass": "^1.43.4"
   },
   "dependencies": {
+    "@fontsource/aileron": "^4.5.0",
     "@fontsource/noto-sans-jp": "^4.5.2",
     "@fontsource/open-sans": "^4.5.1",
     "@fontsource/open-sans-condensed": "^4.5.0",

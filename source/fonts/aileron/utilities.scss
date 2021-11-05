@@ -84,7 +84,7 @@ $declarations: null !default;
 	} @else {
 		@return
 			url('#{path($weight: $weight, $style: $style, $subset: $subset, $format: woff2)}') format('woff2'),
-			url('#{path($weight: $weight, $style: $style, $subset: all, $format: woff)}') format('woff');
+			url('#{path($weight: $weight, $style: $style, $subset: $subset, $format: woff)}') format('woff');
 	}
 }
 

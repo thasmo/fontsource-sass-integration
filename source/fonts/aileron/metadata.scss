@@ -1,0 +1,20 @@
+$name: 'Aileron' !default;
+$identifier: 'aileron' !default;
+$category: sans-serif !default;
+$styles: (normal, italic) !default;
+$widths: (normal) !default;
+$weights: (100, 300, 400, 600, 700, 800) !default;
+$formats: ('woff', 'woff2') !default;
+$directory: '~@fontsource/#{$identifier}/files' !default;
+$defaults: (
+	style: normal,
+	width: normal,
+	weight: 400,
+	subset: latin,
+) !default;
+
+$subsets: (
+	latin: null,
+) !default;
+
+$axes: () !default;
