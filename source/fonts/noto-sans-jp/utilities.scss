@@ -18,7 +18,7 @@ $declarations: null !default;
 @function face-style($value, $axis: null) {
 	@if ($axis == all or $axis == slnt) and map.has-key(font.$axes, slnt) {
 		@return oblique map.get(font.$axes, slnt, min) + deg map.get(font.$axes, slnt, max) + deg;
-	} @else if meta.type-of($axis) == 'map' {
+	} @else if meta.type-of($axis) == map {
 		@return oblique map.get($axis, min) + deg map.get($axis, max) + deg;
 	} @else if $value {
 		@return $value;
@@ -30,7 +30,7 @@ $declarations: null !default;
 @function face-weight($value, $axis: null) {
 	@if ($axis == all or $axis == wght) and map.has-key(font.$axes, wght) {
 		@return map.get(font.$axes, wght, min) map.get(font.$axes, wght, max);
-	} @else if meta.type-of($axis) == 'map' {
+	} @else if meta.type-of($axis) == map {
 		@return map.get($axis, min) map.get($axis, max);
 	} @else if $value {
 		@return $value;
@@ -42,7 +42,7 @@ $declarations: null !default;
 @function face-width($value, $axis: null) {
 	@if ($axis == all or $axis == wdth) and map.has-key(font.$axes, wdth) {
 		@return math.percentage(math.div(map.get(font.$axes, wdth, min), 100)) math.percentage(math.div(map.get(font.$axes, wdth, max), 100));
-	} @else if meta.type-of($axis) == 'map' {
+	} @else if meta.type-of($axis) == map {
 		@return math.percentage(math.div(map.get($axis, min), 100)) math.percentage(math.div(map.get($axis, wdth, max), 100));
 	} @else if $value {
 		@return $value;
@@ -54,7 +54,7 @@ $declarations: null !default;
 @function face-variation($axis) {
 	@if ($axis == all or $axis == ital) and map.has-key(font.$axes, ital) {
 		@return 'ital' 1;
-	} @else if meta.type-of($axis) == 'map' {
+	} @else if meta.type-of($axis) == map {
 		@return 'ital' map.get($axis, max);
 	}
 
