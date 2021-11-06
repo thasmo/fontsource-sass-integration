@@ -76,7 +76,7 @@ $suffix: null !default;
 	@return null;
 }
 
-@function glyphs(
+@function face-glyphs(
 	$subset,
 	$subsets: map.get($metadata, subsets),
 ) {
@@ -89,7 +89,7 @@ $suffix: null !default;
 	@return null;
 }
 
-@function source(
+@function face-source(
 	$axis: null,
 	$subset: map.get($metadata, defaults, subset),
 	$style: map.get($metadata, defaults, style),
@@ -138,7 +138,7 @@ $suffix: null !default;
 			@each $weight in if($axis, map.get($metadata, defaults, weight), if($weights == all, map.get($metadata, weights), $weights)) {
 				@each $width in if($axis, map.get($metadata, defaults, width), if($widths == all, map.get($metadata, widths), $widths)) {
 					@each $subset, $glyphs in if($subsets == all, map.keys(map.get($metadata, subsets)), $subsets) {
-						@each $glyphs in glyphs(if($glyphs, $glyphs, $subset)) {
+						@each $glyphs in face-glyphs(if($glyphs, $glyphs, $subset)) {
 							$data: (
 								arguments: (
 									name: $name,
@@ -166,7 +166,7 @@ $suffix: null !default;
 									font-stretch: face-width($width, if($axis == wdth and $metrics, $metrics, $axis)),
 									font-variation-settings: face-variation(if($axis == ital and $metrics, $metrics, $axis)),
 									unicode-range: $glyphs,
-									src: source($axis, $subset, $style, $weight),
+									src: face-source($axis, $subset, $style, $weight),
 								)
 							);
 
