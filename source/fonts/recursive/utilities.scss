@@ -64,13 +64,16 @@ $suffix: null !default;
 }
 
 @function face-variation(
-	$axis,
+	$value,
+	$axis: null,
 	$axes: map.get($metadata, axes),
 ) {
 	@if ($axis == all or $axis == ital) and map.has-key($axes, ital) {
 		@return 'ital' 1;
 	} @else if meta.type-of($axis) == map {
 		@return 'ital' map.get($axis, max);
+	} @else if $value {
+		@return $value;
 	}
 
 	@return null;
@@ -164,7 +167,7 @@ $suffix: null !default;
 									font-style: face-style($style, if($axis == slnt and $metrics, $metrics, $axis)),
 									font-weight: face-weight($weight, if($axis == slnt and $metrics, $metrics, $axis)),
 									font-stretch: face-width($width, if($axis == wdth and $metrics, $metrics, $axis)),
-									font-variation-settings: face-variation(if($axis == ital and $metrics, $metrics, $axis)),
+									font-variation-settings: face-variation(null, if($axis == ital and $metrics, $metrics, $axis)),
 									unicode-range: $glyphs,
 									src: face-source($axis, $subset, $style, $weight),
 								)
