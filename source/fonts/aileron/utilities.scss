@@ -120,7 +120,7 @@ $suffix: null !default;
 	$base: map.get($metadata, directory),
 ) {
 	@if $axis {
-		@return '#{$base}/#{$identifier}-#{$subset}-variable-#{if($axis == all, 'full', $axis + 'Only')}-#{$style}.woff2';
+		@return '#{$base}/#{$identifier}-#{$subset}-variable-#{if($axis == all, 'full', $axis + 'Only')}-#{$style}.#{$format}';
 	} @else {
 		@return '#{$base}/#{$identifier}-#{$subset}-#{$weight}-#{$style}.#{$format}';
 	}
