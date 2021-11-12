@@ -7,6 +7,7 @@
 @use 'metadata';
 
 $metadata: meta.module-variables(metadata) !default;
+
 $name: map.get($metadata, name) !default;
 $styles: map.get($metadata, defaults, style) !default;
 $weights: map.get($metadata, defaults, weight) !default;
@@ -14,6 +15,24 @@ $widths: map.get($metadata, defaults, width) !default;
 $subsets: all !default;
 $axes: null !default;
 $suffix: null !default;
+$directory: '~@fontsource/#{map.get($metadata, identifier)}/files' !default;
+
+$name-function: null !default;
+$style-function: null !default;
+$weight-function: null !default;
+$width-function: null !default;
+$variation-function: null !default;
+$glyph-function: null !default;
+$source-function: null !default;
+$path-function: null !default;
+
+@function face-name(
+	$name: $name,
+	$suffix: $suffix,
+	$axis: null,
+) {
+	@return string.quote(#{$name if($axis, $suffix, null)});
+}
 
 @function face-style(
 	$value,
@@ -98,15 +117,18 @@ $suffix: null !default;
 	$style: map.get($metadata, defaults, style),
 	$weight: map.get($metadata, defaults, weight),
 	$axes: map.get($metadata, axes),
+	$path-function: $path-function,
 ) {
+	$path-function: if($path-function, $path-function, meta.get-function('path'));
+
 	@if (($axis == all and list.length(map.keys($axes)) > 0) or map.has-key($axes, $axis)) {
 		@return
-			url('#{path($axis: $axis, $style: $style, $subset: $subset, $format: woff2)}') format('woff2 supports variations'),
-			url('#{path($axis: $axis, $style: $style, $subset: $subset, $format: woff2)}') format('woff2-variations');
+			url('#{meta.call($path-function, $axis: $axis, $style: $style, $subset: $subset, $format: woff2)}') format('woff2 supports variations'),
+			url('#{meta.call($path-function, $axis: $axis, $style: $style, $subset: $subset, $format: woff2)}') format('woff2-variations');
 	} @else {
 		@return
-			url('#{path($weight: $weight, $style: $style, $subset: $subset, $format: woff2)}') format('woff2'),
-			url('#{path($weight: $weight, $style: $style, $subset: $subset, $format: woff)}') format('woff');
+			url('#{meta.call($path-function, $weight: $weight, $style: $style, $subset: $subset, $format: woff2)}') format('woff2'),
+			url('#{meta.call($path-function, $weight: $weight, $style: $style, $subset: $subset, $format: woff)}') format('woff');
 	}
 }
 
@@ -117,12 +139,12 @@ $suffix: null !default;
 	$style: map.get($metadata, defaults, style),
 	$subset: map.get($metadata, defaults, subset),
 	$identifier: map.get($metadata, identifier),
-	$base: map.get($metadata, directory),
+	$directory: $directory,
 ) {
 	@if $axis {
-		@return '#{$base}/#{$identifier}-#{$subset}-variable-#{if($axis == all, 'full', $axis + 'Only')}-#{$style}.#{$format}';
+		@return '#{$directory}/#{$identifier}-#{$subset}-variable-#{if($axis == all, 'full', $axis + 'Only')}-#{$style}.#{$format}';
 	} @else {
-		@return '#{$base}/#{$identifier}-#{$subset}-#{$weight}-#{$style}.#{$format}';
+		@return '#{$directory}/#{$identifier}-#{$subset}-#{$weight}-#{$style}.#{$format}';
 	}
 }
 
@@ -135,13 +157,28 @@ $suffix: null !default;
 	$axes: $axes,
 	$suffix: $suffix,
 	$metadata: $metadata,
+	$name-function: $name-function,
+	$style-function: $style-function,
+	$weight-function: $weight-function,
+	$width-function: $width-function,
+	$variation-function: $variation-function,
+	$glyph-function: $glyph-function,
+	$source-function: $source-function,
 ) {
+	$name-function: if($name-function, $name-function, meta.get-function('face-name'));
+	$style-function: if($style-function, $style-function, meta.get-function('face-style'));
+	$weight-function: if($weight-function, $weight-function, meta.get-function('face-weight'));
+	$width-function: if($width-function, $width-function, meta.get-function('face-width'));
+	$variation-function: if($variation-function, $variation-function, meta.get-function('face-variation'));
+	$glyphs-function: if($glyph-function, $glyph-function, meta.get-function('face-glyphs'));
+	$source-function: if($source-function, $source-function, meta.get-function('face-source'));
+
 	@each $axis, $metrics in $axes {
 		@each $style in if($axis, map.get($metadata, defaults, style), if($styles == all, map.get($metadata, styles), $styles)) {
 			@each $weight in if($axis, map.get($metadata, defaults, weight), if($weights == all, map.get($metadata, weights), $weights)) {
 				@each $width in if($axis, map.get($metadata, defaults, width), if($widths == all, map.get($metadata, widths), $widths)) {
 					@each $subset, $glyphs in if($subsets == all, map.keys(map.get($metadata, subsets)), $subsets) {
-						@each $glyphs in face-glyphs(if($glyphs, $glyphs, $subset)) {
+						@each $glyphs in meta.call($glyphs-function, $subset: if($glyphs, $glyphs, $subset)) {
 							$data: (
 								arguments: (
 									name: $name,
@@ -163,13 +200,13 @@ $suffix: null !default;
 									glyphs: $glyphs,
 								),
 								properties: (
-									font-family: string.quote(#{$name if($axis, $suffix, null)}),
-									font-style: face-style($style, if($axis == slnt and $metrics, $metrics, $axis)),
-									font-weight: face-weight($weight, if($axis == slnt and $metrics, $metrics, $axis)),
-									font-stretch: face-width($width, if($axis == wdth and $metrics, $metrics, $axis)),
-									font-variation-settings: face-variation(null, if($axis == ital and $metrics, $metrics, $axis)),
+									font-family: meta.call($name-function, $name: $name, $suffix: $suffix, $axis: $axis),
+									font-style: meta.call($style-function, $value: $style, $axis: if($axis == slnt and $metrics, $metrics, $axis)),
+									font-weight: meta.call($weight-function, $value: $weight, $axis: if($axis == slnt and $metrics, $metrics, $axis)),
+									font-stretch: meta.call($width-function, $value: $width, $axis: if($axis == wdth and $metrics, $metrics, $axis)),
+									font-variation-settings: meta.call($variation-function, $value: null, $axis: if($axis == ital and $metrics, $metrics, $axis)),
+									src: meta.call($source-function, $axis: $axis, $subset: $subset, $style: $style, $weight: $weight),
 									unicode-range: $glyphs,
-									src: face-source($axis, $subset, $style, $weight),
 								)
 							);
 
